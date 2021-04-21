@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -34,6 +35,7 @@ public class BudgetFragment extends Fragment {
     private RecyclerView recyclerView;
     private Database databaseHelper;
     private BudgetViewModel pageViewModel;
+    private TextView total_sum, total_sumLabel;
 
     public static BudgetFragment newInstance(int index) {
         BudgetFragment fragment = new BudgetFragment();
@@ -48,6 +50,11 @@ public class BudgetFragment extends Fragment {
             @NonNull LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
         View view  = inflater.inflate(R.layout.income_main, container, false);
+
+        total_sumLabel = view.findViewById(R.id.total_sumLabel);
+        total_sumLabel.setText(getResources().getString(R.string.total));
+
+        total_sum = view.findViewById(R.id.total_sum);
         List<Income> budgetListCopy = budgetList;
         databaseHelper = new Database(getActivity().getApplicationContext());
         customRecyclerViewAdapter = new IncomeRecyclerAdapter(budgetListCopy, getActivity().getApplicationContext());
@@ -93,6 +100,7 @@ public class BudgetFragment extends Fragment {
             if(customRecyclerViewAdapter != null)
                 customRecyclerViewAdapter.refresh(budgetArrayList);
             budgetList = budgetArrayList;
+            total_sum.setText(String.valueOf(databaseHelper.getTotalSum()));
         }
     };
 }

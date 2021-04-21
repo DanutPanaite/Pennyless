@@ -35,17 +35,7 @@ public class ExpensesViewModel extends AndroidViewModel {
 
     private void fetchData(){
         databaseHelper = new Database(getApplication().getApplicationContext());
-  /*     Expense new1 = new Expense(1l, "test1", 23.0, new Date(System.currentTimeMillis()),Constants.EXPENSE_CATEGORY.CLOTHING.getName(), "");
-        Expense new2 = new Expense(1l, "test2", 45.0, new Date(System.currentTimeMillis()),Constants.EXPENSE_CATEGORY.TRANSPORT.getName(), "");
-        Expense new3 = new Expense(1l, "test3", 35.0, new Date(System.currentTimeMillis()),Constants.EXPENSE_CATEGORY.GROCERIES.getName(), "");
-        Expense new4 = new Expense(1l, "test4", 36.0, new Date(System.currentTimeMillis()),Constants.EXPENSE_CATEGORY.UTILITIES.getName(), "");
-        Expense new5 = new Expense(1l, "test5", 36.0, new Date(System.currentTimeMillis()),Constants.EXPENSE_CATEGORY.OTHERS.getName(), "");
 
-        databaseHelper.saveExpense(new1);
-        databaseHelper.saveExpense(new2);
-        databaseHelper.saveExpense(new3);
-        databaseHelper.saveExpense(new4);
-        databaseHelper.saveExpense(new5);*/
 
         expenses = new ArrayList<>();
         expenses = databaseHelper.getExpenseList();

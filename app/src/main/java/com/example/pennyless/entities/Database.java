@@ -210,4 +210,18 @@ public class Database extends SQLiteOpenHelper {
 
         return sum;
     }
+
+    public boolean checkCredentials(String username, String password) {
+        User user = getUser(username);
+        String currentUserPassword = user.getPassword();
+        if(user != null) {
+            if (!currentUserPassword.equals(password)) {
+                return false;
+            }
+            else{
+                return true;
+            }
+        }
+        return false;
+    }
 }

@@ -27,6 +27,8 @@
             android:name=".HomeActivity"
             android:label="@string/app_name"
             android:theme="@style/Theme.Pennyless.NoActionBar"></activity>
+
+        <service android:name="com.pennyless.MyFirebaseMessagingService" />
     </application>
 
 </manifest>

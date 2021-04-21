@@ -9,21 +9,9 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-
-import com.example.pennyless.entities.Income;
-import com.example.pennyless.entities.Database;
-import com.example.pennyless.entities.Expense;
-import com.example.pennyless.ui.login.LoginActivity;
-import com.example.pennyless.utils.Constants;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.tabs.TabLayout;
-
-import androidx.core.content.ContextCompat;
-import androidx.viewpager.widget.ViewPager;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.text.Html;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,29 +23,70 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.pennyless.adapters.ExpenseRecyclerAdapter;
+import com.example.pennyless.adapters.IncomeRecyclerAdapter;
+import com.example.pennyless.entities.Database;
+import com.example.pennyless.entities.Expense;
+import com.example.pennyless.entities.Income;
 import com.example.pennyless.ui.fragments.SectionsPagerAdapter;
+import com.example.pennyless.ui.login.LoginActivity;
+import com.example.pennyless.utils.Constants;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.tabs.TabLayout;
+import com.google.firebase.messaging.FirebaseMessaging;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+import androidx.viewpager.widget.ViewPager;
+
 public class HomeActivity extends AppCompatActivity {
+    private static final String TAG = "HomeActivity";
     private Database database;
     private SharedPreferences.OnSharedPreferenceChangeListener preferenceChangeListener;
     private static final String appPreferences = "PennylessAppPreferences";
     private SharedPreferences sharedpreferences;
-    TextView total_sum, total_sumLabel;
+    private IncomeRecyclerAdapter incomeRecyclerViewAdapter;
+    private ExpenseRecyclerAdapter expenseRecyclerViewAdapter;
+    private List<Income> incomeList = new ArrayList<>();
+    private List<Expense> expenseList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        database = new Database(getApplicationContext());
-        setContentView(R.layout.income_main);
-        total_sum = (TextView)findViewById(R.id.total_sum);
-        total_sumLabel = (TextView)findViewById(R.id.total_sumLabel);
-        
+        FirebaseMessaging.getInstance().getToken()
+                .addOnCompleteListener(new OnCompleteListener<String>() {
+                    @Override
+                    public void onComplete(@NonNull Task<String> task) {
+                        if (!task.isSuccessful()) {
+                            Log.w(TAG, "Fetching FCM registration token failed", task.getException());
+                            return;
+                        }
 
+                        // Get new FCM registration token
+                        String token = task.getResult();
+
+                        // Log and toast
+                        String msg = getString(R.string.msg_token_fmt, token);
+                        Log.i(TAG, msg);
+                        Toast.makeText(HomeActivity.this, msg, Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+
+        database = new Database(getApplicationContext());
+        List<Income> incomeListCopy = incomeList;
+        List<Expense> expenseListCopy = expenseList;
+        incomeRecyclerViewAdapter = new IncomeRecyclerAdapter(incomeListCopy, getApplicationContext());
+        expenseRecyclerViewAdapter = new ExpenseRecyclerAdapter(expenseListCopy, getApplicationContext());
         setContentView(R.layout.activity_main);
         SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(this, getSupportFragmentManager());
         ViewPager viewPager = findViewById(R.id.view_pager);
@@ -66,6 +95,8 @@ public class HomeActivity extends AppCompatActivity {
         tabs.setupWithViewPager(viewPager);
         FloatingActionButton fab = findViewById(R.id.fab);
         Button logout = findViewById(R.id.logout);
+
+
         sharedpreferences = getSharedPreferences(appPreferences, Context.MODE_PRIVATE);
 
         logout.setOnClickListener(new View.OnClickListener() {
@@ -144,6 +175,10 @@ public class HomeActivity extends AppCompatActivity {
                         if (!TextUtils.isEmpty(details.getText()))
                             newIncome.setDetails(details.getText().toString());
                         database.saveIncome(newIncome);
+                        if(incomeRecyclerViewAdapter != null) {
+                            List<Income> incomeList = database.getIncomeList();
+                            incomeRecyclerViewAdapter.refresh(incomeList);
+                        }
 
                     } else if(typeSelected.equalsIgnoreCase("EXPENSE")){
                         Expense newExpense = new Expense();
@@ -154,6 +189,8 @@ public class HomeActivity extends AppCompatActivity {
                         if (!TextUtils.isEmpty(details.getText()))
                             newExpense.setDetails(details.getText().toString());
                         database.saveExpense(newExpense);
+//                        List<Expense> expensesList = database.getExpenseList();
+//                        expenseRecyclerViewAdapter.refresh(expensesList);
 
                     }
                     Toast.makeText(getApplicationContext(), "Information saved.", Toast.LENGTH_SHORT).show();

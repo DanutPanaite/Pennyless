@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "915476020280",
+    "project_id": "pennyless-f4572",
+    "storage_bucket": "pennyless-f4572.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:915476020280:android:053818b51396f9981dfacd",
+        "android_client_info": {
+          "package_name": "com.example.pennyless"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "915476020280-3tf5f7bs0kt3kv43jt4pt7esovsv5686.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCG24SVr1nR6Jh3Vc2LQvjBXgBONR8MBzQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "915476020280-3tf5f7bs0kt3kv43jt4pt7esovsv5686.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

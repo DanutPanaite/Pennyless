@@ -24,7 +24,7 @@ public class BudgetViewModel extends AndroidViewModel {
         init();
     }
 
-    MutableLiveData<List<Income>> getBudgetMutableLiveData() {
+    public MutableLiveData<List<Income>> getBudgetMutableLiveData() {
         return budgetData;
     }
 
@@ -36,10 +36,6 @@ public class BudgetViewModel extends AndroidViewModel {
     private void fetchData(){
         databaseHelper = new Database(getApplication().getApplicationContext());
 
-   /*     Budget new1 = new Budget(1,500, Constants.BUDGET_CATEGORY.SALARY.getName(), "");
-        Budget new2 = new Budget(1,300, Constants.BUDGET_CATEGORY.INHERITANCE.getName(), "");
-        databaseHelper.saveBudget(new1);
-        databaseHelper.saveBudget(new2);*/
         budgetList = new ArrayList<>();
         budgetList = databaseHelper.getIncomeList();
     }
