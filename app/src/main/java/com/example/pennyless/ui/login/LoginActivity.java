@@ -108,13 +108,6 @@ public class LoginActivity extends AppCompatActivity {
             databaseHelper.saveUser(newUser);
             Toast.makeText(getApplicationContext(), getResources().getString(R.string.welcome) + " "+username + "!", Toast.LENGTH_LONG).show();
         }
-//        if(databaseHelper.checkCredentials(username, password)){
-//            Toast.makeText(getApplicationContext(), getResources().getString(R.string.welcome) + " "+username + "!", Toast.LENGTH_LONG).show();
-//            onLoginSuccess();
-//        }
-//        else{
-//            onLoginFailed();
-//        }
         onLoginSuccess();
     }
 

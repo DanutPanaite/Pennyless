@@ -23,8 +23,6 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.pennyless.adapters.ExpenseRecyclerAdapter;
-import com.example.pennyless.adapters.IncomeRecyclerAdapter;
 import com.example.pennyless.entities.Database;
 import com.example.pennyless.entities.Expense;
 import com.example.pennyless.entities.Income;
@@ -53,8 +51,6 @@ public class HomeActivity extends AppCompatActivity {
     private SharedPreferences.OnSharedPreferenceChangeListener preferenceChangeListener;
     private static final String appPreferences = "PennylessAppPreferences";
     private SharedPreferences sharedpreferences;
-    private IncomeRecyclerAdapter incomeRecyclerViewAdapter;
-    private ExpenseRecyclerAdapter expenseRecyclerViewAdapter;
     private List<Income> incomeList = new ArrayList<>();
     private List<Expense> expenseList = new ArrayList<>();
 
@@ -62,6 +58,18 @@ public class HomeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        FirebaseMessaging.getInstance().subscribeToTopic("PersonalBudgeting")
+            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    String msg = getString(R.string.msg_subscribed);
+                    if (!task.isSuccessful()) {
+                        msg = getString(R.string.msg_subscribe_failed);
+                    }
+                    Log.d(TAG, msg);
+                    Toast.makeText(HomeActivity.this, msg, Toast.LENGTH_SHORT).show();
+                }
+            });
         FirebaseMessaging.getInstance().getToken()
                 .addOnCompleteListener(new OnCompleteListener<String>() {
                     @Override
@@ -83,10 +91,6 @@ public class HomeActivity extends AppCompatActivity {
 
 
         database = new Database(getApplicationContext());
-        List<Income> incomeListCopy = incomeList;
-        List<Expense> expenseListCopy = expenseList;
-        incomeRecyclerViewAdapter = new IncomeRecyclerAdapter(incomeListCopy, getApplicationContext());
-        expenseRecyclerViewAdapter = new ExpenseRecyclerAdapter(expenseListCopy, getApplicationContext());
         setContentView(R.layout.activity_main);
         SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(this, getSupportFragmentManager());
         ViewPager viewPager = findViewById(R.id.view_pager);
@@ -175,11 +179,6 @@ public class HomeActivity extends AppCompatActivity {
                         if (!TextUtils.isEmpty(details.getText()))
                             newIncome.setDetails(details.getText().toString());
                         database.saveIncome(newIncome);
-                        if(incomeRecyclerViewAdapter != null) {
-                            List<Income> incomeList = database.getIncomeList();
-                            incomeRecyclerViewAdapter.refresh(incomeList);
-                        }
-
                     } else if(typeSelected.equalsIgnoreCase("EXPENSE")){
                         Expense newExpense = new Expense();
                         newExpense.setAddDate(new Date(System.currentTimeMillis()));
@@ -189,9 +188,6 @@ public class HomeActivity extends AppCompatActivity {
                         if (!TextUtils.isEmpty(details.getText()))
                             newExpense.setDetails(details.getText().toString());
                         database.saveExpense(newExpense);
-//                        List<Expense> expensesList = database.getExpenseList();
-//                        expenseRecyclerViewAdapter.refresh(expensesList);
-
                     }
                     Toast.makeText(getApplicationContext(), "Information saved.", Toast.LENGTH_SHORT).show();
                 }catch (Exception e){
